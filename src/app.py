@@ -27,38 +27,36 @@ def sitemap():
 
 @app.route('/members', methods=['GET'])
 def members():
-
     # this is how you can use the Family datastructure by calling its methods
     members = jackson_family.get_all_members()
-    response_body = {
-        "family": members
-    }
+    response_body = members
+    
 
     return jsonify(response_body), 200
 
-@app.route('/members/<int:member_id>', methods=['GET'])
-def member(member_id):
+@app.route('/member/<int:id>', methods=['GET'])
+def member(id):
 
     # this is how you can use the Family datastructure by calling its methods
-    member = jackson_family.get_member(member_id)
-    response_body = {
-        "family": member
-    }
+    member = jackson_family.get_member(id)
+    if member == None:
+         return jsonify({"message": "There is no user with the id " + str(id)}), 404
+    else:
+        response_body = member
+        return jsonify(response_body), 200
 
-    return jsonify(response_body), 200
-
-@app.route('/members/<int:member_id>', methods=['DELETE'])
-def delete(member_id):
+@app.route('/member/<int:id>', methods=['DELETE'])
+def delete(id):
 
     # this is how you can use the Family datastructure by calling its methods
-    member = jackson_family.delete_member(member_id)
-    response_body = {
-        "family": member
-    }
+    member = jackson_family.delete_member(id)
+    if member == None:
+        return jsonify({"message": "There is no user with the id " + str(id)}), 404
+    else:
+        response_body = member
+        return jsonify(response_body), 200
 
-    return jsonify(response_body), 200
-
-@app.route('/members', methods=['POST'])
+@app.route('/member', methods=['POST'])
 def add_new_member():
     request_body = request.json
 
@@ -72,11 +70,9 @@ def add_new_member():
 
     member = jackson_family.add_member(new_member)
 
-    response_body = {
-        "family": member
-    }
+    response_body = str(new_member["first_name"]) + " " + str(new_member["last_name"])
 
-    return jsonify(response_body), 200
+    return jsonify({"message": "Member " + response_body +  " added successfully"}), 200
 
 # this only runs if `$ python src/app.py` is executed
 if __name__ == '__main__':
